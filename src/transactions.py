@@ -118,10 +118,10 @@ def loadTransactions(transactionsFileName):
             
     return transactions
 
-def getMyTransactions():
+def getMyTransactions(card_statement_filename, account_feed_filename):
 
     creditTransactions = []
-    transactions = loadTransactions("../data/card_statements_18-06-2022/formated.json")
+    transactions = loadTransactions(card_statement_filename)
 
     for t in transactions:
         date = t["time"][:10].split('-')                      
@@ -131,7 +131,7 @@ def getMyTransactions():
 
 
     debitTransactions = []
-    transactions = loadTransactions("../data/account_feed_18-06-2022/raw.json")
+    transactions = loadTransactions(account_feed_filename)
     for t in transactions:
         date = t["postDate"].split('-')                      
         d = datetime.date(int(date[0]),int(date[1]),int(date[2]))
