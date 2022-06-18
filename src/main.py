@@ -1,21 +1,19 @@
-from parse import loadTransactions, Transaction
+import transactions as t
 
-transactions = loadTransactions("../data/real-data.json");
-currentMonth = transactions[0].date.month
-totalExpenses = 0
-print(currentMonth)
+myTransactions = t.getMyTransactions();
 
-## Fazer função estática na classe transactions para converter amount de inteiro para uma
-## string legível
+for i in myTransactions["credit"]:
+    print(i.description)
+    print(i.amount)
+    print(i.date)
+    print("-----\n")
 
-for i in transactions:
+for i in myTransactions["debit"]:
+    print(i.typename)
+    print(i.title)
+    print(i.detail)
+    print(i.date)
+    print("-----\n")
 
-    formatedAmount = i.formatedAmount
-    print("{0: <32}{1: <10}{2: <24}".format(i.description, formatedAmount, str(i.date)))
-    totalExpenses += i.amount
-    if (i.date.month != currentMonth):
-        print(str(i.date.month) + "!=" + str(currentMonth))
-        print("Month has changed! Expenses in the month: " + str(Transaction.formatAmount(totalExpenses)))
-        print(50 * '-' + '\n')
-        currentMonth = i.date.month
-        totalExpenses = 0
+print(len(myTransactions["debit"]))
+print(len(myTransactions["credit"]))
