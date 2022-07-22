@@ -34,15 +34,17 @@ def parse(account_feed, card_statements):
 
         i = de["detail"].find("R$")
         type = ""
+        description = ""
 
         if i < 2 and i >= 0:
             type = "Revenue"
+            description = de["title"]
         else:
             type = "Debit expense"
-
+            description=de["detail"]
         # print(value)
 
-        dt = t.transaction(de["detail"], type, value, date)
+        dt = t.transaction(description, type, value, date)
         # ct.print()
         transactions += [dt]
 
