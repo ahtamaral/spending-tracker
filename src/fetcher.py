@@ -69,8 +69,8 @@ def fetch():
 
     nu = Nubank(MockHttpClient())
     nu.authenticate_with_cert(cpf, nu_pass, "../data/cert.p12")
-
-    f = open("lastFetch.txt", "w")
+    
+    f = open("../data/lastFetch.txt", "w")
     # Descomentar linha de baixo quando for utilizar pra valer.
     #f.write(str(today))
     f.write(str(today-datetime.timedelta(days=7))) # last fetch setado para 7 dias atrás. Para debug.
@@ -91,11 +91,13 @@ def fetch():
     os.system("touch " + account_feed_filename)
     os.system("touch " + card_statements_filename)
 
-    print(account_feed)
-    print(card_statements)
+    # print(account_feed)
+    # print(card_statements)
 
     print(account_feed_filename)
     print(card_statements_filename)
 
     os.system("echo " + str(account_feed) + " > " + account_feed_filename)
     os.system("echo " + str(card_statements) + " > " + card_statements_filename)
+
+    return account_feed, card_statements
