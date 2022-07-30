@@ -3,9 +3,10 @@ import datetime
 import matplotlib.pyplot as plt
 import transaction as t
 import math
+import os
 
 
-def parse(account_feed, card_statements):
+def parse(account_feed, card_statements, dataVeracity):
     # print(account_feed)
     # print(card_statements)
 
@@ -36,9 +37,15 @@ def parse(account_feed, card_statements):
         type = ""
         description = ""
 
+
+        account = True
         if i < 2 and i >= 0:
             type = "Revenue"
             description = de["title"]
+            if description == "Dinheiro resgatado" or description == "Dinheiro guardado":
+                # print("Neutral transaction.")
+                account = False
+
         else:
             type = "Debit expense"
             description=de["detail"]
@@ -46,7 +53,8 @@ def parse(account_feed, card_statements):
 
         dt = t.transaction(description, type, value, date)
         # ct.print()
-        transactions += [dt]
+        if account:
+            transactions += [dt]
 
     # CREDITO   
     for row in range(len(dfCredit)):
@@ -60,8 +68,20 @@ def parse(account_feed, card_statements):
         transactions += [ct]
 
     soma = 0.0
-    for tr in transactions:
-        tr.print("row")
-        soma += tr.value
-    print(soma)
+    
+    today = datetime.date.today()
+    filename = "../data/" + str(today) + "/" + dataVeracity + "/csv"
+    os.system("mkdir -p " + filename)
+    filename += "/history.csv"
+
+    with open(filename, "w") as fp:
+        print("Writing CSV history to " + filename)
+        for tr in transactions:
+            # tr.print("csv")
+
+            # print("{0},{1},{2},{3}".format(tr.description, tr.type, tr.value, tr.date))
+            fp.write("{0}?{1}?{2}?{3}\n".format(tr.description, tr.type, str(tr.value).replace(".",","), tr.date))
+
+            # soma += tr.value
+        # print(soma)
         

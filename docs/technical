@@ -2,3 +2,10 @@
 função fetcher.fetch(), de forma que cpf e senha sejam parametros dessa função.
 Digo isso pois dessa forma o fetch fica modularizado, ou seja, posso chamar a função
 recebendo as credenciais da linha de comando ou de um POST de API.
+
+
+* No parser, as datas enviadas como parametros tem que ser do tipo datetime.
+* Melhorar o print("row") -> Se comprimento da string for maior que o format, truncar.
+
+
+* Validar se a string de data pode ser convertida para um datetime; Se vier uma string quebrada, pode quebrar várias coisas futuramente.

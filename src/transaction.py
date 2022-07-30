@@ -21,3 +21,8 @@ class transaction:
             if len(self.description) > 48:
                 d = d[0:48]
             print("{0: <50}\t{1: <15}\t{2: <10}\t{3: <12}".format(d, self.type, self.value, str(self.date)))
+        elif format == "csv":
+            d = self.description
+            if len(self.description) > 48:
+                d = d[0:48]
+            print("{0},{1},{2},{3}".format(d, self.type, self.value, str(self.date)))

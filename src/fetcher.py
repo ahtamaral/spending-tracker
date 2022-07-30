@@ -38,49 +38,67 @@ def fetch():
     f.close()
     print("Last Fetch: " + lastFetchStr)
 
-    date = lastFetchStr.split('-')                      
-    lastFetch = datetime.date(int(date[0]),int(date[1]),int(date[2]))
-    today = datetime.date.today()
-    timeDelta = today - lastFetch 
-
-    if timeDelta.days < 2:
-        print("The last fetch was performed less than 2 days ago.")
-        exit("Very recurring accesses to your account can block it for 72 hours. We will not proceed for safety.")
-
-    # ---
-
-    validCpf = False
-
-    while not validCpf:
-        print("Enter you CPF (Just numbers): ", end="")
-        cpf = input()
-        if len(cpf) != 11:
-            print("Invalid CPF length. Try again.")
-        else:
-            if not cpf.isnumeric():
-                print("Non numeric CPF. Try again.")
-            else:
-                print("Valid CPF.")
-                validCpf = True
-
-    nu_pass = getpass.getpass("Insira sua senha: ")
-
-    # Fetching Nubank server.
-
-    nu = Nubank(MockHttpClient())
-    nu.authenticate_with_cert(cpf, nu_pass, "../data/cert.p12")
+    fetchRealData = False
+    print("Fetch real data? [y/n]: ", end="")
+    r = input()
+    if (r == "y" or r == "Y"):
+        fetchRealData = True
+        # print("Yes")
+    # else:
+    #     print("No")
     
+    today = datetime.date.today() 
+
+    if (fetchRealData == True):
+
+        date = lastFetchStr.split('-')                      
+        lastFetch = datetime.date(int(date[0]),int(date[1]),int(date[2]))
+        timeDelta = today - lastFetch 
+
+        # print(timeDelta)
+
+        if timeDelta.days < 2:
+            print("The last fetch was performed less than 2 days ago.")
+            exit("Very recurring accesses to your account can block it for 72 hours. We will not proceed for safety.")
+
+        # ---
+
+        validCpf = False
+
+        while not validCpf:
+            print("Enter you CPF (Just numbers): ", end="")
+            cpf = input()
+            if len(cpf) != 11:
+                print("Invalid CPF length. Try again.")
+            else:
+                if not cpf.isnumeric():
+                    print("Non numeric CPF. Try again.")
+                else:
+                    print("Valid CPF.")
+                    validCpf = True
+
+        nu_pass = getpass.getpass("Insira sua senha: ")
+
+        # Fetching Nubank server.
+        nu = Nubank()
+        nu.authenticate_with_cert(cpf, nu_pass, "../data/cert.p12")
+        dataVeracity = "real_data"
+    else:
+        nu = Nubank(MockHttpClient())
+        nu.authenticate_with_cert("12345678900", "pass", "../data/cert.p12")
+        dataVeracity = "mock"
+
     f = open("../data/lastFetch.txt", "w")
     # Descomentar linha de baixo quando for utilizar pra valer.
-    #f.write(str(today))
-    f.write(str(today-datetime.timedelta(days=7))) # last fetch setado para 7 dias atrás. Para debug.
+    f.write(str(today))
+    # f.write(str(today-datetime.timedelta(days=7))) # last fetch setado para 7 dias atrás. Para debug.
     f.close()
 
     account_feed = nu.get_account_feed()
     card_statements = nu.get_card_statements()
 
-    account_feed_filename = "../data/" + str(today) + "/account_feed"
-    card_statements_filename = "../data/" + str(today) + "/card_statements"
+    account_feed_filename = "../data/" + str(today) + "/" + dataVeracity + "/account_feed"
+    card_statements_filename = "../data/" + str(today) + "/" + dataVeracity + "/card_statements"
 
     os.system("mkdir -p " + account_feed_filename)
     os.system("mkdir -p " + card_statements_filename)
@@ -94,10 +112,12 @@ def fetch():
     # print(account_feed)
     # print(card_statements)
 
-    print(account_feed_filename)
-    print(card_statements_filename)
+    # print(account_feed_filename)
+    # print(card_statements_filename)
 
+    print("Writing account feed to " + account_feed_filename)
     os.system("echo " + str(account_feed) + " > " + account_feed_filename)
+    print("Writing card statemens to " + card_statements_filename)
     os.system("echo " + str(card_statements) + " > " + card_statements_filename)
 
-    return account_feed, card_statements
+    return account_feed, card_statements, dataVeracity
