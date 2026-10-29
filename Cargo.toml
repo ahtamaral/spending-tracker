@@ -1,0 +1,12 @@
+[package]
+name = "spending-tracker"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+chrono = "0.4.45"
+csv = "1.4.0"
+dotenvy = "0.15.7"
+imap = "2.4.1"
+mailparse = "0.18.0"
+native-tls = "0.2.18"
