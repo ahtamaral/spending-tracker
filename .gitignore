@@ -30,3 +30,5 @@ samples/
 # Added by cargo
 
 /target
+
+*.db

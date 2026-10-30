@@ -1,6 +1,6 @@
 use super::money::parse_cents;
 use super::parser::Parser;
-use crate::models::{FinancialInstitution, Transaction};
+use crate::models::{AccountType, FinancialInstitution, Transaction};
 use chrono::{NaiveDate, NaiveTime};
 use csv::StringRecord;
 use std::error::Error;
@@ -19,13 +19,14 @@ impl Parser for FlashParser {
     ) -> Result<Transaction, Box<dyn Error>> {
         Ok(Transaction {
             institution: FinancialInstitution::Flash,
+            account_type: AccountType::BenefitCard,
             date: NaiveDate::parse_from_str(&record[0], "%d/%m/%Y")?,
             time: Some(NaiveTime::parse_from_str(&record[1], "%H:%M")?),
             description: record[2].to_string(),
             amount_cents: parse_cents(&record[3])?,
             external_id: None,
             source_message_id: source_message_id.to_string(),
-            category: None,
+            category_id: None,
         })
     }
 }
@@ -42,6 +43,7 @@ mod tests {
         let transactions = FlashParser.parse(csv, "<msg-1>").unwrap();
         assert_eq!(transactions.len(), 2);
         assert_eq!(transactions[0].source_message_id, "<msg-1>");
+        assert!(matches!(transactions[0].account_type, AccountType::BenefitCard));
         assert_eq!(transactions[0].amount_cents, -5115);
         assert_eq!(transactions[0].date, NaiveDate::from_ymd_opt(2026, 10, 25).unwrap());
         assert_eq!(transactions[1].amount_cents, 120000);
