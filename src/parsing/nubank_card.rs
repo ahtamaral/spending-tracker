@@ -1,6 +1,6 @@
 use super::money::parse_cents;
 use super::parser::Parser;
-use crate::models::{FinancialInstitution, Transaction};
+use crate::models::{AccountType, FinancialInstitution, Transaction};
 use chrono::NaiveDate;
 use csv::StringRecord;
 use std::error::Error;
@@ -19,13 +19,14 @@ impl Parser for NubankCardParser {
     ) -> Result<Transaction, Box<dyn Error>> {
         Ok(Transaction {
             institution: FinancialInstitution::Nubank,
+            account_type: AccountType::CreditCard,
             date: NaiveDate::parse_from_str(&record[0], "%Y-%m-%d")?,
             time: None,
             description: record[1].to_string(),
             amount_cents: -parse_cents(&record[2])?,
             external_id: None,
             source_message_id: source_message_id.to_string(),
-            category: None,
+            category_id: None,
         })
     }
 }
@@ -47,6 +48,7 @@ mod tests {
         assert_eq!(transactions[1].amount_cents, 152826);
         assert_eq!(transactions[2].amount_cents, -141497);
         assert_eq!(transactions[0].source_message_id, "<msg-1>");
+        assert!(matches!(transactions[0].account_type, AccountType::CreditCard));
     }
 
     #[test]
